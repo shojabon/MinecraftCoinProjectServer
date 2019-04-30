@@ -40,13 +40,13 @@ public class SSCV1 implements SSCVCommand {
     public SSCV1(Socket socket, SSCV1Mode mode, SSCVCommand command, SSCEvent event) {
         if(event != null) eventHandler.add(event);
         if(command != null) this.commandHandler.add(command);
+        this.baseCommandHandler = this;
         this.socket = socket;
         this.mode = mode;
         this.communicationsManager = new CommunicationsManager(this);
         this.communicationsManager.openCommunication();
         this.commandManager = new CommandManager(this);
         this.encryptionManager = new EncryptionManager(this);
-        this.baseCommandHandler = this;
         this.protocolManager = new ProtocolManager(this);
         for (SSCEvent even : eventHandler) {
             even.onClientConnect(new SSCClientConnectEvent(this));
