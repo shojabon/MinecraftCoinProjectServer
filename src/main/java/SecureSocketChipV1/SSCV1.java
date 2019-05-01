@@ -33,6 +33,8 @@ public class SSCV1 implements SSCVCommand {
 
     SSCV1Mode mode;
 
+    boolean authenticated = false;
+
     HashMap<String, String> returnMap = new HashMap<>();
 
     int permissionLevel = 0;
@@ -40,13 +42,13 @@ public class SSCV1 implements SSCVCommand {
     public SSCV1(Socket socket, SSCV1Mode mode, SSCVCommand command, SSCEvent event) {
         if(event != null) eventHandler.add(event);
         if(command != null) this.commandHandler.add(command);
-        this.baseCommandHandler = this;
         this.socket = socket;
         this.mode = mode;
         this.communicationsManager = new CommunicationsManager(this);
         this.communicationsManager.openCommunication();
         this.commandManager = new CommandManager(this);
         this.encryptionManager = new EncryptionManager(this);
+        this.baseCommandHandler = this;
         this.protocolManager = new ProtocolManager(this);
         for (SSCEvent even : eventHandler) {
             even.onClientConnect(new SSCClientConnectEvent(this));
@@ -140,5 +142,13 @@ public class SSCV1 implements SSCVCommand {
 
     public void setPermissionLevel(int permissionLevel) {
         this.permissionLevel = permissionLevel;
+    }
+
+    public boolean isAuthenticated() {
+        return authenticated;
+    }
+
+    public void setAuthenticated(boolean authenticated) {
+        this.authenticated = authenticated;
     }
 }

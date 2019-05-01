@@ -21,17 +21,35 @@ public class MinecraftCoinServer extends SSCEvent implements SSCVCommand{
         server = new CommandExtentionServer(port, this, this);
     }
 
+    public boolean ifTokenAvailable(String token){
+        if(token.length() != 16){
+            return false;
+        }
+        try {
+            ResultSet res = connector.query("SELECT count(*) FROM server_account_list WHERE token ='" + connector.escapeStringForMySQL(token) + "';");
+            int a = 0;
+            while (res.next()) {
+                a = res.getInt("count(*)");
+            }
+            res.close();
+            return a >= 1;
+        }catch (SQLException e){
+            return false;
+        }
+    }
+
     @Override
     public void onCommand(SSCV1 sscv1, String command, String[] args, UUID uuid) {
-        if(command.equalsIgnoreCase("testa")){
-            try {
-                ResultSet res = connector.query("SELECT * FROM server_account_list");
-                while (res.next()) {
-                    sscv1.getCom().sendMessage(res.getString("name"));
+        if(sscv1.getCom().isCommunicationEncrypted() && !sscv1.isAuthenticated()){
+            if(command.equalsIgnoreCase("AUTH")){
+                if(args.length == 1){
+                    if(ifTokenAvailable(args[0])){
+                        sscv1.setAuthenticated(true);
+                        System.out.println("authed");
+                    }else{
+                        sscv1.getCom().closeCommunication();
+                    }
                 }
-                res.close();
-            }catch (SQLException e){
-                e.printStackTrace();
             }
         }
     }

@@ -19,6 +19,18 @@ public class DatabaseConnector {
     Connection connection = null;
     Statement statement = null;
 
+    public String escapeStringForMySQL(String s) {
+        return s.replace("\\", "\\\\")
+                .replaceAll("\b","\\b")
+                .replaceAll("\n","\\n")
+                .replaceAll("\r", "\\r")
+                .replaceAll("\t", "\\t")
+                .replaceAll("\\x1A", "\\Z")
+                .replaceAll("\\x00", "\\0")
+                .replaceAll("'", "\\'")
+                .replaceAll("\"", "\\\"");
+    }
+
     public DatabaseConnector(File file){
         try {
             Class.forName("org.sqlite.JDBC");
