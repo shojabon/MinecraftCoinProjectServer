@@ -1,6 +1,8 @@
 package MinecraftCoinServer;
 
         import CommandExtentionServer.CommandExtentionServer;
+        import SecureSocketChipV1.EventClasses.SSCClientConnectEvent;
+        import SecureSocketChipV1.EventClasses.SSCCommandExecuteEvent;
         import SecureSocketChipV1.SSCV1;
         import SecureSocketChipV1.interfaces.SSCEvent;
         import SecureSocketChipV1.interfaces.SSCVCommand;
@@ -39,9 +41,17 @@ public class MinecraftCoinServer extends SSCEvent implements SSCVCommand{
     }
 
     @Override
+    public void onClientConnect(SSCClientConnectEvent e) {
+        System.out.println(e.getChip().getSocket().getRemoteSocketAddress() + " Connected");
+        return;
+    }
+
+
+    @Override
     public void onCommand(SSCV1 sscv1, String command, String[] args, UUID uuid) {
-        if(sscv1.getCom().isCommunicationEncrypted() && !sscv1.isAuthenticated()){
             if(command.equalsIgnoreCase("AUTH")){
+                System.out.println(args[0]);
+                System.out.println(uuid);
                 if(args.length == 1){
                     if(ifTokenAvailable(args[0])){
                         sscv1.setAuthenticated(true);
@@ -51,7 +61,6 @@ public class MinecraftCoinServer extends SSCEvent implements SSCVCommand{
                     }
                 }
             }
-        }
     }
 
 
